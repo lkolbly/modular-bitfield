@@ -46,6 +46,6 @@ pub trait IntoBits<T> {
 ///
 /// Implemented by primitive specifier types.
 #[doc(hidden)]
-pub trait FromBits<T> {
-    fn from_bits(bits: Bits<T>) -> Self;
+pub trait FromBits<BASE, FACE> {
+    fn from_bits(bits: Bits<BASE>) -> FACE;
 }

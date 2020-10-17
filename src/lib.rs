@@ -180,12 +180,23 @@ pub trait Specifier {
     ///
     /// This is the type that is used internally for computations.
     type Base: Default + private::PushBits + private::PopBits;
+
+    /// The type returned by getter functions.
+    ///
+    /// # Note
+    ///
+    /// Although this is usually the same as the Face type, in the case of
+    /// non-power-of-two enums (or other fields that may fail), this type is
+    /// a Result type.
+    type GetterReturn;
+
     /// The interface type of the specifier.
     ///
     /// # Note
     ///
     /// This is the type that is used for the getters and setters.
-    type Face: private::FromBits<Self::Base> + private::IntoBits<Self::Base>;
+    type Face: private::FromBits<Self::Base, Self::GetterReturn>
+        + private::IntoBits<Self::Base>;
 }
 
 /// The default set of predefined specifiers.

@@ -26,6 +26,7 @@ pub fn generate(_input: TokenStream2) -> TokenStream2 {
                 const BITS: usize = #n;
                 type Base = #t_origin;
                 type Face = #t_origin;
+                type GetterReturn = #t_origin;
             }
 
             impl crate::private::SpecifierBase for [(); #n] {

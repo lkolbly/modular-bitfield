@@ -356,7 +356,7 @@ impl BitfieldStruct {
         let expanded = quote_spanned!(span=>
             #[doc = #getter_docs]
             #[inline]
-            #vis fn #get_ident(&self) -> <#ty as ::modular_bitfield::Specifier>::Face {
+            #vis fn #get_ident(&self) -> <#ty as ::modular_bitfield::Specifier>::GetterReturn {
                 #bits_checks
                 let __bf_read: <#ty as ::modular_bitfield::Specifier>::Base = {
                     ::modular_bitfield::private::read_specifier::<#ty>(&self.bytes[..], #offset)
@@ -365,7 +365,8 @@ impl BitfieldStruct {
                     <#ty as ::modular_bitfield::Specifier>::Base
                 > = ::modular_bitfield::private::Bits(__bf_read);
                 <<#ty as ::modular_bitfield::Specifier>::Face as ::modular_bitfield::private::FromBits<
-                    <#ty as ::modular_bitfield::Specifier>::Base
+                    <#ty as ::modular_bitfield::Specifier>::Base,
+                    <#ty as ::modular_bitfield::Specifier>::GetterReturn,
                 >>::from_bits(__bf_bits)
             }
 

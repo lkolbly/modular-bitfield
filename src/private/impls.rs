@@ -10,6 +10,7 @@ use crate::Specifier;
 impl Specifier for bool {
     const BITS: usize = 1;
     type Base = u8;
+    type GetterReturn = bool;
     type Face = bool;
 }
 
@@ -20,6 +21,7 @@ macro_rules! impl_specifier_for_primitive {
                 const BITS: usize = $bits;
                 type Base = $prim;
                 type Face = $prim;
+                type GetterReturn = $prim;
             }
         )*
     };
@@ -87,7 +89,7 @@ macro_rules! impl_pop_bits {
 }
 impl_pop_bits!(u16, u32, u64, u128);
 
-impl FromBits<u8> for bool {
+impl FromBits<u8, bool> for bool {
     #[inline(always)]
     fn from_bits(bits: Bits<u8>) -> Self {
         bits.into_raw() != 0
@@ -111,7 +113,7 @@ macro_rules! impl_wrapper_from_naive {
                 }
             }
 
-            impl FromBits<$type> for $type {
+            impl FromBits<$type, $type> for $type {
                 #[inline(always)]
                 fn from_bits(bits: Bits<$type>) -> Self {
                     bits.into_raw()
