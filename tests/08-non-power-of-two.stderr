@@ -1,5 +1,5 @@
-error: BitfieldSpecifier expected a number of variants which is a power of 2
-  --> $DIR/08-non-power-of-two.rs:11:1
+error: A BitfieldSpecifier with a non-power-of-2 number of variants must have the 'bits' attribute specified
+  --> $DIR/08-non-power-of-two.rs:10:10
    |
 11 | pub enum Bad {
    | ^^^

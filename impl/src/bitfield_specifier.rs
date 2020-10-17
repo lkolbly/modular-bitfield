@@ -41,18 +41,61 @@ fn generate_or_error(input: TokenStream2) -> syn::Result<TokenStream2> {
     }
 }
 
-fn generate_enum(input: syn::ItemEnum) -> syn::Result<TokenStream2> {
-    let span = input.span();
+struct Attributes {
+    bits: Option<usize>,
+}
+
+fn parse_attrs(attrs: &[syn::Attribute]) -> syn::Result<Attributes> {
+    let attributes = attrs
+        .iter()
+        .filter(|attr| attr.path.is_ident("bits"))
+        .fold(
+            Ok(Attributes { bits: None }),
+            |acc: syn::Result<Attributes>, attr| {
+                let mut acc = acc?;
+                if acc.bits.is_some() {
+                    return Err(format_err_spanned!(
+                        attr,
+                        "More than one 'bits' attributes is not permitted",
+                    ))
+                }
+                let meta = attr.parse_meta()?;
+                acc.bits = match meta {
+                    syn::Meta::NameValue(syn::MetaNameValue {
+                        lit: syn::Lit::Int(lit),
+                        ..
+                    }) => Some(lit.base10_parse::<usize>()?),
+                    _ => {
+                        return Err(format_err_spanned!(
+                            attr,
+                            "could not parse 'bits' attribute",
+                        ))
+                    }
+                };
+                Ok(acc)
+            },
+        )?;
+    Ok(attributes)
+}
+
+pub fn generate_enum(input: syn::ItemEnum) -> syn::Result<TokenStream2> {
+    let attributes = parse_attrs(&input.attrs)?;
     let enum_ident = &input.ident;
-    let count_variants = input.variants.iter().count();
-    if !count_variants.is_power_of_two() {
-        return Err(format_err!(
-            span,
-            "BitfieldSpecifier expected a number of variants which is a power of 2",
-        ))
-    }
-    // We can take `trailing_zeros` returns type as the required amount of bits.
-    let bits = count_variants.trailing_zeros() as usize;
+
+    let (bits, _returns_result) = match attributes.bits {
+        Some(bits) => (bits, true),
+        None => {
+            let count_variants = input.variants.iter().count();
+            if !count_variants.is_power_of_two() {
+                return Err(format_err_spanned!(
+                    input,
+                    "A BitfieldSpecifier with a non-power-of-2 number of variants must have the 'bits' attribute specified",
+                ));
+            }
+            // We can take `trailing_zeros` returns type as the required amount of bits.
+            (count_variants.trailing_zeros() as usize, false)
+        }
+    };
 
     let variants = input
         .variants
@@ -89,7 +132,7 @@ fn generate_enum(input: syn::ItemEnum) -> syn::Result<TokenStream2> {
         )
     });
 
-    Ok(quote_spanned!(span=>
+    Ok(quote_spanned!(input.span() =>
         #( #check_discriminants )*
 
         impl ::modular_bitfield::Specifier for #enum_ident {

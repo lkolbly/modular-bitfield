@@ -74,6 +74,17 @@ pub enum DeliveryMode {
     External = 0b111,
 }
 
+#[derive(BitfieldSpecifier, Debug, PartialEq)]
+#[bits = 4]
+enum SmallPrime {
+    Two = 0b0010,
+    Three = 0b0011,
+    Five = 0b0101,
+    Seven = 0b0111,
+    Eleven = 0b1011,
+    Thirteen = 0b1101,
+}
+
 fn main() {
     assert_eq!(std::mem::size_of::<RedirectionTableEntry>(), 1);
 
