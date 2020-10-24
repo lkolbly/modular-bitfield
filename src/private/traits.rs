@@ -40,12 +40,12 @@ pub trait IntoBits<T> {
     fn into_bits(self) -> Bits<T>;
 }
 
-/// Helper trait to convert from bits.
+/*/// Helper trait to convert from bits.
 ///
 /// # Note
 ///
 /// Implemented by primitive specifier types.
 #[doc(hidden)]
-pub trait FromBits<BASE, FACE> {
-    fn from_bits(bits: Bits<BASE>) -> FACE;
-}
+pub trait FromBits<T: Specifier> {
+    fn from_bits(bits: T::Base) -> T::GetterReturn;
+}*/

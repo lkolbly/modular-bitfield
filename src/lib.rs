@@ -195,8 +195,9 @@ pub trait Specifier {
     /// # Note
     ///
     /// This is the type that is used for the getters and setters.
-    type Face: private::FromBits<Self::Base, Self::GetterReturn>
-        + private::IntoBits<Self::Base>;
+    type Face: private::IntoBits<Self::Base>;
+
+    fn from_bits(bits: Self::Base) -> Self::GetterReturn;
 }
 
 /// The default set of predefined specifiers.

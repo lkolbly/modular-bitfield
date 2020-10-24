@@ -361,13 +361,10 @@ impl BitfieldStruct {
                 let __bf_read: <#ty as ::modular_bitfield::Specifier>::Base = {
                     ::modular_bitfield::private::read_specifier::<#ty>(&self.bytes[..], #offset)
                 };
-                let __bf_bits: ::modular_bitfield::private::Bits<
+                /*let __bf_bits: ::modular_bitfield::private::Bits<
                     <#ty as ::modular_bitfield::Specifier>::Base
-                > = ::modular_bitfield::private::Bits(__bf_read);
-                <<#ty as ::modular_bitfield::Specifier>::Face as ::modular_bitfield::private::FromBits<
-                    <#ty as ::modular_bitfield::Specifier>::Base,
-                    <#ty as ::modular_bitfield::Specifier>::GetterReturn,
-                >>::from_bits(__bf_bits)
+                > = ::modular_bitfield::private::Bits(__bf_read);*/
+                <#ty as ::modular_bitfield::Specifier>::from_bits(__bf_read)
             }
 
             #[doc = #with_docs]

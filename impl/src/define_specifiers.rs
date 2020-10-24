@@ -27,6 +27,10 @@ pub fn generate(_input: TokenStream2) -> TokenStream2 {
                 type Base = #t_origin;
                 type Face = #t_origin;
                 type GetterReturn = #t_origin;
+
+                fn from_bits(bits: #t_origin) -> #t_origin {
+                    bits
+                }
             }
 
             impl crate::private::SpecifierBase for [(); #n] {

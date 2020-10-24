@@ -10,7 +10,6 @@ pub use self::{
         write_specifier,
     },
     traits::{
-        FromBits,
         IntoBits,
         PopBits,
         PushBits,

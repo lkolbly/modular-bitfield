@@ -140,9 +140,20 @@ pub fn generate_enum(input: syn::ItemEnum) -> syn::Result<TokenStream2> {
             type Base = <[(); #bits] as ::modular_bitfield::private::SpecifierBase>::Base;
             type GetterReturn = Self;
             type Face = Self;
+
+            #[inline(always)]
+            fn from_bits(bits: <#enum_ident as ::modular_bitfield::Specifier>::Base) -> <#enum_ident as ::modular_bitfield::Specifier>::GetterReturn {
+                match bits {
+                    #( #match_arms )*
+                    // This API is only used internally and is only invoked on valid input.
+                    // Thus it is find to omit error handling for cases where the incoming
+                    // value is out of bounds to improve performance.
+                    _ => { unsafe { ::core::hint::unreachable_unchecked() } }
+                }
+            }
         }
 
-        impl ::modular_bitfield::private::FromBits<<#enum_ident as ::modular_bitfield::Specifier>::Base, <#enum_ident as ::modular_bitfield::Specifier>::GetterReturn> for #enum_ident {
+                      /*impl ::modular_bitfield::private::FromBits<<#enum_ident as ::modular_bitfield::Specifier>::Base, <#enum_ident as ::modular_bitfield::Specifier>::GetterReturn> for #enum_ident {
             #[inline(always)]
             fn from_bits(bits: ::modular_bitfield::private::Bits<<#enum_ident as ::modular_bitfield::Specifier>::Base>) -> <#enum_ident as ::modular_bitfield::Specifier>::GetterReturn {
                 match bits.into_raw() {
@@ -153,7 +164,7 @@ pub fn generate_enum(input: syn::ItemEnum) -> syn::Result<TokenStream2> {
                     _ => { unsafe { ::core::hint::unreachable_unchecked() } }
                 }
             }
-        }
+        }*/
 
         impl ::modular_bitfield::private::IntoBits<<Self as ::modular_bitfield::Specifier>::Base> for #enum_ident {
             #[inline(always)]

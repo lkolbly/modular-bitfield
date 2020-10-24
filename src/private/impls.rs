@@ -1,6 +1,5 @@
 use super::{
     Bits,
-    FromBits,
     IntoBits,
     PopBits,
     PushBits,
@@ -12,6 +11,10 @@ impl Specifier for bool {
     type Base = u8;
     type GetterReturn = bool;
     type Face = bool;
+
+    fn from_bits(bits: u8) -> bool {
+        bits != 0
+    }
 }
 
 macro_rules! impl_specifier_for_primitive {
@@ -22,6 +25,10 @@ macro_rules! impl_specifier_for_primitive {
                 type Base = $prim;
                 type Face = $prim;
                 type GetterReturn = $prim;
+
+                fn from_bits(bits: $prim) -> $prim {
+                    bits
+                }
             }
         )*
     };
@@ -89,13 +96,6 @@ macro_rules! impl_pop_bits {
 }
 impl_pop_bits!(u16, u32, u64, u128);
 
-impl FromBits<u8, bool> for bool {
-    #[inline(always)]
-    fn from_bits(bits: Bits<u8>) -> Self {
-        bits.into_raw() != 0
-    }
-}
-
 impl IntoBits<u8> for bool {
     #[inline(always)]
     fn into_bits(self) -> Bits<u8> {
@@ -110,13 +110,6 @@ macro_rules! impl_wrapper_from_naive {
                 #[inline(always)]
                 fn into_bits(self) -> Bits<$type> {
                     Bits(self)
-                }
-            }
-
-            impl FromBits<$type, $type> for $type {
-                #[inline(always)]
-                fn from_bits(bits: Bits<$type>) -> Self {
-                    bits.into_raw()
                 }
             }
         )*
